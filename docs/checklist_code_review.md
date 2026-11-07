@@ -1,7 +1,7 @@
-# Checklist de Code Review Inicial (Diagnóstico) — Metodología de Sistemas II
+# Checklist de Code Review — Metodología de Sistemas II
 
-**Proyecto:** Sistema de Gestión de Solicitudes Académicas
-**Versión de Evaluación:** `estado-inicial` (Código Base)
+**Proyecto:** Sistema de Gestión de Solicitudes Académicas  
+**Versión de Evaluación:** `estado-refactorizado` 
 
 ## Lista de Chequeo Técnica
 
@@ -9,31 +9,43 @@
 
 | Criterio | Estado | Observación |
 |---|---|---|
-| SRP | Rechazado | La clase `SistemaGestorGeneral` actúa como *God Class*, acumulando lógica de negocio, validaciones, gestión de usuarios y escritura en disco |
-| OCP | Rechazado | Para agregar un nuevo estado o canal de persistencia es obligatorio modificar el código fuente existente. |
-| LSP | No Aplica | No existen jerarquías ni abstracciones en el diseño base. |
-| ISP | No Aplica | Ausencia total de interfaces o contratos abstractos. |
-| DIP | Rechazado | Acoplamiento rígido directo a archivos planos mediante la llamada directa a `open("solicitudes_db.txt")`. |
+| SRP | Aprobado | Se dividió la clase monolítica `SistemaGestorGeneral` en servicios atómicos: `SolicitudService`, `PermisoService` y `ReporteService`. |
+| OCP | Aprobado | El manejo de estados y repositorios permite extensión mediante constantes estructuradas e interfaces sin modificar lógica existente |
+| LSP | Aprobado | Las clases de repositorio respetan los contratos definidos en `ISolicitudRepository` |
+| ISP | Aprobado | La interfaz `ISolicitudRepository` define únicamente los métodos de persistencia esenciales. |
+| DIP | Aprobado | `SolicitudService` depende de la abstracción `ISolicitudRepository` y no de una implementación de archivos estáticos concreta. |
 
-### 2. Calidad de Código y Code Smells Detectados
+---
 
-| Criterio | Estado | Observación |
-|---|---|---|
-| Tamaño de Funciones | Rechazado | Long Method: El método `procesar_solicitud_completa()` mezcla múltiples responsabilidades. |
-| Manejo de Parámetros | Rechazado | Long Parameter List: La función `filtrar_solicitudes` requiere 6 parámetros sueltos en su firma. |
-| Manejo de Cadenas | Rechazado | Magic Strings: Estados como `"Pendiente"` o `"En Proceso"` están hardcodeados como texto suelto. |
-| Duplicación de Código | Rechazado | Código Duplicado: Verificación manual de permisos repetida en cada operación del gestor. |
-| Delegación de Dominio | Rechazado | Feature Envy: La clase `Reporteador` manipula las estructuras internas de `Solicitud` en lugar de delegar la acción. |
-| Manejo de Excepciones | Rechazado | Poor Error Handling: Uso de bloques `try-except` genéricos que ocultan y silencian excepciones de negocio (`pass`). |
-
-### 3. Estándares y Seguridad
+### 2. Calidad de Código y Clean Code
 
 | Criterio | Estado | Observación |
 |---|---|---|
-| Privacidad de Datos | Aprobado | Se utilizan exclusivamente datos sintéticos anonimizados. |
+| Nombres Significativos | Aprobado | Variables y métodos expresan claramente su intención (`registrar_solicitud`, `FiltroSolicitudDTO`). |
+| Tamaño de Funciones | Aprobado | Métodos pequeños y enfocados. Se eliminó el Long Method descomprimiendo validaciones en métodos privados auxiliares (`_validar_datos`). |
+| Manejo de Parámetros | Aprobado | Se eliminó el Long Parameter List aplicando el patrón Introduce Parameter Object con la clase `FiltroSolicitudDTO`. |
+| Ausencia de Magic Strings | Aprobado | Reemplazo de strings mágicas por la clase estructurada `EstadoSolicitud`. |
+| Manejo de Excepciones | Aprobado | Reemplazo de bloques `try-except` genéricos pasivos por excepciones explícitas de negocio (`PermissionError`, `ValueError`, `LookupError`). |
 
-## Resumen del Diagnóstico Inicial
+---
 
-El sistema cumple con la calidad externa básica (ejecuta las 4 operaciones requeridas), pero presenta una calidad interna crítica. La presencia de 8 code smells estructurales vulnera la mantenibilidad y eleva drásticamente el costo del cambio. Se requiere una refactorización segura y profunda.
+### 3. Estándares, Seguridad y Datos
 
-## Estado de la Revisión: REQUIERE REFACTORIZACIÓN
+| Criterio | Estado | Observación |
+|---|---|---|
+| Privacidad de Datos | Aprobado | Utilización exclusiva de datos sintéticos y anonimizados |
+
+---
+
+## Feedback y Criterios de Aceptación
+
+### Observaciones del Revisor:
+La versión refactorizada resuelve con éxito los 8 code smells diagnosticados inicialmente. El código presenta bajo acoplamiento, alta cohesión y una estructura legible que facilita la mantenibilidad a largo plazo.
+
+### Criterio de Aceptación Final:
+- [x] Código fuente refactorizado sin deuda técnica crítica.
+- [x] Comportamiento externo preservado en las 4 operaciones principales.
+- [x] Repositorio etiquetado correctamente con tags `estado-inicial` y `estado-refactorizado`.
+- [x] Evidencias y documentación cargadas en la carpeta `/docs`.
+
+## Estado de la Revisión: APROBADO PARA PRODUCCIÓN
