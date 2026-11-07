@@ -4,7 +4,7 @@ Este proyecto constituye el Trabajo Práctico Integrador de la materia Metodolog
 Consiste en la evolución y refactorización de un sistema de software enfocado en la gestión de solicitudes académicas. Logrando la reducción de deuda técnica, la aplicación de principios SOLID y la preservación del comportamiento externo mediante refactoring seguro.
 
 ## Enlace Video de Presentación
-[Demostración y Defensa Técnica del Proyecto]()
+[Demostración y Defensa Técnica del Proyecto](https://youtu.be/9Mqp4jKQ6e0)
 
 ## Arquitectura del Sistema y Evolución Técnica
 
